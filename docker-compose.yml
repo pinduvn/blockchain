@@ -1,0 +1,75 @@
+version: '3.7'
+
+services:
+  node0:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node0
+    hostname: tienda
+    command: run --host 0.0.0.0 --port 8000
+    entrypoint: flask
+    environment:
+      FLASK_APP: node_server.py
+    restart: always
+    #expose:
+    #  - "8000"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./server:/code
+    #depends_on:
+    #  - tienda_db
+    networks:
+      - net
+  node1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node1
+    hostname: tienda
+    command: 
+        flask run --host 0.0.0.0 --port 8000 
+        #curl -X POST http://node1:8000/register_with -H 'Content-Type: application/json' -d '{"node_address": "http://node0:8000"}'
+    #entrypoint: 
+    environment:
+      FLASK_APP: node_server.py
+    restart: always
+    #expose:
+    #  - "8000"
+    ports:
+      - 8001:8000
+    volumes:
+      - ./server:/code
+    depends_on:
+      - node0
+    networks:
+      - net
+  node2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node2
+    hostname: tienda
+    command: 
+        flask run --host 0.0.0.0 --port 8000 
+        #curl -X POST http://node2:8000/register_with -H 'Content-Type: application/json' -d '{"node_address": "http://node0:8000"}'
+    #entrypoint: flask
+    environment:
+      FLASK_APP: node_server.py
+    restart: always
+    #expose:
+    #  - "8000"
+    ports:
+      - 8002:8000
+    volumes:
+      - ./server:/code
+    depends_on:
+      - node0
+    networks:
+      - net
+
+networks:
+  net:
+    #external: true
+    #name: pindu_net
